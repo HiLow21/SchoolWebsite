@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import Layout from "@/components/layout/Layout";
 import PageTransition from "@/components/layout/PageTransition";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const contactInfo = [
   {
@@ -79,10 +80,25 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { error } = await supabase.from("inquiries").insert({
+      name: formData.parentName,
+      email: formData.email,
+      phone: formData.phone || null,
+      subject: formData.inquiryType,
+      message: `${formData.message}${formData.childName ? `\n\nChild's Name: ${formData.childName}` : ""}${formData.childAge ? `\nChild's Age: ${formData.childAge}` : ""}`,
+    });
 
     setIsSubmitting(false);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to submit inquiry. Please try again.",
+      });
+      return;
+    }
+
     setIsSubmitted(true);
     toast({
       title: "Message Sent!",
