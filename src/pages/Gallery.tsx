@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Camera } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -12,10 +12,11 @@ import eventImage from "@/assets/gallery-event.jpg";
 import scienceImage from "@/assets/gallery-science.jpg";
 import sportsImage from "@/assets/gallery-sports.jpg";
 import artImage from "@/assets/gallery-art.jpg";
-
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 const categories = ["All", "Campus", "Classroom", "Events", "Activities"];
 
-const galleryImages = [
+export const galleryImages = [
   {
     src: heroImage,
     alt: "Children reading and playing outdoors",
@@ -60,21 +61,51 @@ const galleryImages = [
   },
 ];
 
+gsap.registerPlugin(ScrollTrigger);
+
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<
     (typeof galleryImages)[0] | null
   >(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   const filteredImages =
     activeCategory === "All"
       ? galleryImages
       : galleryImages.filter((img) => img.category === activeCategory);
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const track = section.querySelector(".gsap-track") as HTMLElement;
+
+    const ctx = gsap.context(() => {
+      const scrollWidth = track.scrollWidth - window.innerWidth;
+
+      gsap.to(track, {
+        x: -scrollWidth,
+        ease: "sine.out",
+        scrollTrigger: {
+          trigger: section,
+          pin: true,
+          scrub: 1,
+          start:"center center",
+          end: () => `+=${scrollWidth}`, //where to end the animation
+          invalidateOnRefresh: true,
+          snap:1,
+          anticipatePin:1
+        },
+      });
+    }, section);
+
+    return () => ctx.revert();
+  }, [filteredImages]);
+
   return (
     <Layout>
       <PageTransition>
-        {/* Hero Section */}
         <section className="relative py-20 md:py-28 bg-gradient-to-br from-accent/30 via-background to-primary/10">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
@@ -109,10 +140,9 @@ const Gallery = () => {
           </div>
         </section>
 
-        {/* Category Filter */}
         <section className="py-8 bg-background border-b border-border">
           <div className="container mx-auto px-4">
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap justify-center gap-2 gallery-items">
               {categories.map((category) => (
                 <button
                   key={category}
@@ -130,13 +160,13 @@ const Gallery = () => {
           </div>
         </section>
 
-        {/* Gallery Grid */}
-        <section className="py-12 md:py-16 bg-background">
-          <div className="container mx-auto px-4">
-            <motion.div
-              layout
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
+        <div className="relative overflow-hidden">
+          <section
+            ref={sectionRef}
+            id="gsap-section-trigger"
+            className="h-[80vh] overflow-hidden"
+          >
+            <div className="gsap-track flex gap-6 w-max px-10 mt-5">
               <AnimatePresence mode="popLayout">
                 {filteredImages.map((image, index) => (
                   <motion.div
@@ -147,7 +177,7 @@ const Gallery = () => {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     onClick={() => setSelectedImage(image)}
-                    className="group cursor-pointer"
+                    className="w-[400px] shrink-0"
                   >
                     <div className="relative overflow-hidden rounded-2xl shadow-md aspect-[4/3]">
                       <img
@@ -168,11 +198,10 @@ const Gallery = () => {
                   </motion.div>
                 ))}
               </AnimatePresence>
-            </motion.div>
-          </div>
-        </section>
+            </div>
+          </section>
+        </div>
 
-        {/* Lightbox */}
         <AnimatePresence>
           {selectedImage && (
             <motion.div
@@ -208,7 +237,6 @@ const Gallery = () => {
           )}
         </AnimatePresence>
 
-        {/* Info Section */}
         <section className="py-16 bg-muted/30">
           <div className="container mx-auto px-4 text-center">
             <SectionHeader

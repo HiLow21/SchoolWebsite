@@ -16,6 +16,7 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import FeatureCard from "@/components/ui/FeatureCard";
 import heroImage from "@/assets/hero-children.jpg";
 import classroomImage from "@/assets/classroom.jpg";
+import ImageScroll from "@/components/home/imageScroll";
 
 const values = [
   {
@@ -64,7 +65,6 @@ const Index = () => {
   return (
     <Layout>
       <PageTransition>
-        {/* Hero Section */}
         <section className="relative min-h-[90vh] flex items-center overflow-hidden">
           <div className="absolute inset-0">
             <img
@@ -133,7 +133,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Stats Section */}
         <section className="py-12 bg-primary">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -158,7 +157,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Values Section */}
+        
         <section className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
             <SectionHeader
@@ -181,7 +180,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* About Preview Section */}
+      
         <section className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -245,8 +244,8 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Testimonial Section */}
-        <section className="py-16 md:py-24 bg-background">
+       
+        {/* <section className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <motion.div
@@ -278,45 +277,10 @@ const Index = () => {
               </motion.div>
             </div>
           </div>
-        </section>
+        </section> */}
+        <ImageScroll />
 
-        {/* CTA Section */}
-        <section className="py-16 md:py-24 bg-secondary">
-          <div className="container mx-auto px-4 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="max-w-2xl mx-auto"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-secondary-foreground mb-4">
-                Ready to Join Our Family?
-              </h2>
-              <p className="text-secondary-foreground/90 text-lg mb-8">
-                Schedule a campus tour and see firsthand why families love
-                Bright Horizons. Limited spots available for the upcoming year.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button
-                  size="lg"
-                  asChild
-                  className="bg-background text-foreground hover:bg-background/90"
-                >
-                  <Link to="/contact">Contact Us Today</Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  asChild
-                  className="border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/10"
-                >
-                  <Link to="/gallery">View Gallery</Link>
-                </Button>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+     
       </PageTransition>
     </Layout>
   );
