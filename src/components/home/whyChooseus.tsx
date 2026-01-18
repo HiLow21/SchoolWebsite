@@ -3,12 +3,11 @@ import classroomImage from "@/assets/classroom.jpg";
 import ecaImage from "@/assets/eca-activities.jpg";
 import eventImage from "@/assets/gallery-event.jpg";
 import scienceImage from "@/assets/gallery-science.jpg";
-import sportsImage from "@/assets/gallery-sports.jpg";
-import artImage from "@/assets/gallery-art.jpg";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/all";
-import { useInView } from "framer-motion";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "@studio-freight/lenis";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const whyChooseUsData = [
   {
@@ -58,21 +57,22 @@ const whyChooseUsData = [
 ];
 
 const WhyChooseus = () => {
-  const sectionRef = useRef(null);
-  const containerRef = useRef(null);
-  gsap.registerPlugin(ScrollTrigger);
+  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
 
-  const lenis = useMemo(
-    () =>
-      new Lenis({
-        duration: 2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-      }),
-    []
-  );
+  const lenis = useMemo(() => {
+    if (lenisRef.current) return lenisRef.current;
 
-  const isInView = useInView(sectionRef);
+    const newLenis = new Lenis({
+      duration: 2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    lenisRef.current = newLenis;
+    return newLenis;
+  }, []);
 
   useEffect(() => {
     lenis.on("scroll", ScrollTrigger.update);
@@ -84,7 +84,7 @@ const WhyChooseus = () => {
     const section = sectionRef.current;
     const container = containerRef.current;
 
-    if (!isInView || !section || !container) return;
+    if (!section || !container) return;
 
     const ctx = gsap.context(() => {
       const slides = gsap.utils.toArray<HTMLElement>(".why-slide");
@@ -95,90 +95,114 @@ const WhyChooseus = () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          pin:true,
-          start: "-=30 top",
-          end: ()=>`+=${slides.length * 100}`,
+          pin: true,
+          start: " top",
+          end: () => `+=${slides.length * 120}`,
           scrub: 1,
           invalidateOnRefresh: true,
+          markers: false,
         },
       });
 
       slides.forEach((slide, index) => {
-        const slideDuration = 0.2;
-        const slideHoldDuration = 1;
+        const slideDuration = 1;
+        const slideHoldDuration = 5;
         const slideExitDuration = 1;
+        const totalSlideDuration =
+          slideDuration + slideHoldDuration + slideExitDuration;
 
+        // Fade in
         tl.to(
           slide,
           {
             opacity: 1,
             duration: slideDuration,
           },
-          index * 3
+          index * totalSlideDuration,
         );
 
+        // Hold
         tl.to(
           slide,
           {
             opacity: 1,
             duration: slideHoldDuration,
           },
-          index * 3 + slideDuration
+          index * totalSlideDuration + slideDuration,
         );
 
+        // Fade out
         tl.to(
           slide,
           {
             opacity: 0,
             duration: slideExitDuration,
           },
-          index * 3 + slideDuration + slideHoldDuration
+          index * totalSlideDuration + slideDuration + slideHoldDuration,
         );
       });
     }, section);
 
-    return () => ctx.revert();
-  }, [isInView, lenis]);
+    return () => {
+      ctx.revert();
+      ScrollTrigger.refresh();
+    };
+  }, [lenis]);
 
   return (
-    <section
-      className="h-screen flex items-center justify-center overflow-hidden mb-2 overflow-x-hidden"
-      ref={sectionRef}
-    >
-      <div
-        className="container mx-auto px-4 relative w-full h-full"
-        ref={containerRef}
-      >
-        {whyChooseUsData.map((data, index) => (
-          <div
-            key={index}
-            className="why-slide absolute inset-0 grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-5 p-10 items-center w-full h-full"
-          >
-            <div className="h-[400px] w-full overflow-hidden rounded-lg">
-              <img src={data.photo} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex flex-col gap-4">
-              <div>
-                <h2 className="text-4xl font-black mb-4 fix-title">
-                  {data.title}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {data.description}
-                </p>
-              </div>
-              <div className="flex flex-col gap-3">
-                {data.bulletPoints.map((point, idx) => (
-                  <div key={idx} className="flex gap-3 items-start">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                    <span className="text-sm text-foreground">{point}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="">
+      <div className="text-center my-16">
+        <span className="text-6xl font-bold text-primary ">Why choose us?</span>
       </div>
-    </section>
+
+      <section
+        className="h-screen flex items-center justify-center overflow-hidden"
+        ref={sectionRef}
+      >
+        <div
+          className="container mx-auto px-4 sm:px-6 relative w-full h-full"
+          ref={containerRef}
+        >
+          {whyChooseUsData.map((data, index) => (
+            <div
+              key={`why-slide-${index}`}
+              className="why-slide absolute inset-0 grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 p-6 sm:p-10 items-center justify-items-center w-full h-full"
+            >
+              <div className="w-full h-[300px] sm:h-[400px] overflow-hidden rounded-lg shadow-lg">
+                <img
+                  src={data.photo}
+                  alt={data.title}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+
+              <div className="flex flex-col gap-6 w-full">
+                <div>
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-foreground">
+                    {data.title}
+                  </h2>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                    {data.description}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3">
+                  {data.bulletPoints.map((point, idx) => (
+                    <div
+                      key={`point-${idx}`}
+                      className="flex gap-3 items-start"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <span className="text-sm text-foreground">{point}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 };
 

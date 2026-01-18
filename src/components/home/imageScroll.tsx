@@ -4,17 +4,24 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { galleryImages } from "@/pages/Gallery";
 
+gsap.registerPlugin(ScrollTrigger);
+
 const ImageScroll = () => {
-  const sectionRef = useRef(null);
-  const trackRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     const section = sectionRef.current;
     const track = trackRef.current;
 
     if (!section || !track) return;
+
+    // Kill any existing ScrollTrigger instances to prevent conflicts
+    ScrollTrigger.getAll().forEach((trigger) => {
+      if (trigger.trigger === section) {
+        trigger.kill();
+      }
+    });
 
     const ctx = gsap.context(() => {
       const scrollWidth = track.scrollWidth - window.innerWidth;
@@ -24,54 +31,63 @@ const ImageScroll = () => {
         ease: "none",
         scrollTrigger: {
           trigger: section,
-          start: "top top",
+          start: "-=30 top",
           end: () => `+=${scrollWidth}`,
           scrub: 1,
-          pin: section,
+          pin: true,
           invalidateOnRefresh: true,
+          markers: false,
         },
       });
     }, section);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      ScrollTrigger.refresh();
+    };
   }, []);
 
   return (
     <div className="bg-primary">
-      <div className="h-[40vh] flex items-center justify-center flex-col space-y-4 text-center">
-        <h1 className="text-6xl font-bold text-white">Achievements</h1>
-        <p className="font-bold text-white">
+      <div className="h-[40vh] flex items-center justify-center flex-col space-y-4 text-center px-4">
+        <h1 className="text-5xl sm:text-6xl font-bold text-white">
+          Achievements
+        </h1>
+        <p className="font-semibold text-white text-sm sm:text-base max-w-2xl">
           Some glimpses of our achievements over the past few years
         </p>
       </div>
 
+
       <section
         ref={sectionRef}
-        className="relative h-screen overflow-hidden flex items-center"
+        className="relative h-screen overflow-hidden flex items-center bg-primary"
       >
         <div
           ref={trackRef}
-          className="gsap-track flex gap-6 px-8 items-center"
+          className="flex gap-8 px-8 items-center will-change-transform"
         >
           {galleryImages.map((img, index) => (
             <motion.div
-              key={index}
+              key={`${img.title}-${index}`}
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false, amount: 0.5 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative flex-shrink-0 w-[500px] h-[5clear00px] rounded-2xl overflow-hidden group cursor-pointer"
+              className="relative flex-shrink-0 w-[450px] sm:w-[500px] h-[500px] sm:h-[600px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg"
             >
               <img
                 src={img.src}
                 alt={img.title}
+                loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <p className="text-sm font-semibold text-blue-400 mb-2 tracking-wider uppercase">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                  <p className="text-xs sm:text-sm font-semibold text-blue-400 mb-2 tracking-wider uppercase">
                     {img.category}
                   </p>
-                  <h3 className="text-3xl font-bold text-white">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
                     {img.title}
                   </h3>
                 </div>
