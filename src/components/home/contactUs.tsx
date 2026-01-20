@@ -1,49 +1,48 @@
-import React from 'react'
-import {motion} from "framer-motion"
-import { Button } from '../ui/button'
-import { Link } from 'react-router-dom'
+import { motion } from "framer-motion";
+import { Button } from "../ui/button";
+import { Link } from "react-router-dom";
+import { ArrowRight, Images } from "lucide-react";
 
 const ContactUs = () => {
   return (
-    <div className="h-fit flex items-center justify-center flex-col space-y-4 mt-10">
-          <div className="container mx-auto px-4 text-center h-[40vh]">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="max-w-2xl mx-auto "
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
-                Contact us
-              </h2>
-              <p className="text-black text-lg mb-8">
-                Visit our school to for a tour or contact us for more
-                information about our programs and enrollment process.
-              </p>
+    <section className="py-20 md:py-28 bg-background">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="max-w-2xl mx-auto text-center"
+        >
+          <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
+            Get Started
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Ready to Join Our Community?
+          </h2>
+          <p className="text-muted-foreground text-lg mb-8">
+            Visit our school for a tour or contact us for more information about
+            our programs and enrollment process.
+          </p>
 
-              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10">
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  asChild
-                  className="bg-background text-foreground hover:bg-primary/90 text-black hover:text-white"
-                >
-                  <Link to="/contact">Contact Us Today</Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  asChild
-                  className="border-secondary-foreground/30 text-secondary-foreground hover:bg-school-lavender bg-primary text-white"
-                >
-                  <Link to="/gallery">View Gallery</Link>
-                </Button>
-              </div>
-            </motion.div>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button size="lg" asChild>
+              <Link to="/contact">
+                Contact Us Today
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/gallery">
+                <Images className="mr-2 w-5 h-5" />
+                View Gallery
+              </Link>
+            </Button>
           </div>
-        </div>
-  )
-}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
 
-export default ContactUs
+export default ContactUs;

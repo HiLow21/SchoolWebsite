@@ -49,15 +49,17 @@ const ImageScroll = () => {
 
   return (
     <div className="bg-primary">
-      <div className="h-[40vh] flex items-center justify-center flex-col space-y-4 text-center px-4">
-        <h1 className="text-5xl sm:text-6xl font-bold text-white">
-          Achievements
-        </h1>
-        <p className="font-semibold text-white text-sm sm:text-base max-w-2xl">
+      <div className="py-16 md:py-20 flex items-center justify-center flex-col space-y-4 text-center px-4">
+        <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary-foreground/20 text-primary-foreground rounded-full text-sm font-medium">
+          Our Journey
+        </span>
+        <h2 className="text-4xl md:text-5xl font-bold text-primary-foreground">
+          Achievements & Moments
+        </h2>
+        <p className="text-primary-foreground/90 text-lg max-w-2xl">
           Some glimpses of our achievements over the past few years
         </p>
       </div>
-
 
       <section
         ref={sectionRef}
@@ -82,12 +84,12 @@ const ImageScroll = () => {
                 loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                  <p className="text-xs sm:text-sm font-semibold text-blue-400 mb-2 tracking-wider uppercase">
+                  <p className="text-xs sm:text-sm font-semibold text-secondary mb-2 tracking-wider uppercase">
                     {img.category}
                   </p>
-                  <h3 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-background leading-tight">
                     {img.title}
                   </h3>
                 </div>
