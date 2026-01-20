@@ -33,7 +33,7 @@ const StatSection = () => {
     {
       value: (
         <>
-          <Counter from={0} to={15} />%
+          <Counter from={0} to={98} />%
         </>
       ),
       label: "Parent Satisfaction",

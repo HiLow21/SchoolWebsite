@@ -128,7 +128,7 @@ const Gallery = () => {
           </div>
         </section>
 
-        <section className="py-12 md:py-16 bg-background">
+        <section className="py-16 md:py-20 bg-background">
           <div className="container mx-auto px-4">
             <motion.div
               layout
@@ -204,23 +204,23 @@ const Gallery = () => {
           )}
         </AnimatePresence>
 
-        <section className="py-16 bg-muted/30">
+        <section className="py-20 md:py-28 bg-muted/30">
           <div className="container mx-auto px-4 text-center">
             <SectionHeader
               badge="Follow Us"
               title="More Moments on Social Media"
               description="Stay connected with daily updates, photos, and school news on our social media channels."
             />
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-4 mt-8">
               <a
                 href="#"
-                className="px-6 py-3 bg-card rounded-xl shadow-sm hover:shadow-md transition-shadow text-foreground font-medium"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-foreground font-medium"
               >
                 Facebook
               </a>
               <a
                 href="#"
-                className="px-6 py-3 bg-card rounded-xl shadow-sm hover:shadow-md transition-shadow text-foreground font-medium"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-foreground font-medium"
               >
                 Instagram
               </a>

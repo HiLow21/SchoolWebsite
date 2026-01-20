@@ -255,13 +255,21 @@ const WhyChooseus = () => {
   }, [lenis]);
 
   return (
-    <div className="">
-      <div className="text-center my-16">
-        <span className="text-6xl font-bold text-primary">Why choose us?</span>
+    <div className="bg-muted/30">
+      <div className="container mx-auto px-4 pt-20 md:pt-28 pb-8 text-center">
+        <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
+          Our Difference
+        </span>
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          Why Choose Bright Horizons?
+        </h2>
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Discover what makes our school the perfect place for your child's growth and development.
+        </p>
       </div>
 
       <section
-        className="h-screen flex items-center justify-center overflow-hidden bg-background"
+        className="h-screen flex items-center justify-center overflow-hidden bg-muted/30"
         ref={sectionRef}
       >
         <div
