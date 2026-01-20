@@ -15,7 +15,7 @@ import artImage from "@/assets/gallery-art.jpg";
 
 const categories = ["All", "Campus", "Classroom", "Events", "Activities"];
 
-const galleryImages = [
+export const galleryImages = [
   {
     src: heroImage,
     alt: "Children reading and playing outdoors",
@@ -74,7 +74,6 @@ const Gallery = () => {
   return (
     <Layout>
       <PageTransition>
-        {/* Hero Section */}
         <section className="relative py-20 md:py-28 bg-gradient-to-br from-accent/30 via-background to-primary/10">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
@@ -109,7 +108,6 @@ const Gallery = () => {
           </div>
         </section>
 
-        {/* Category Filter */}
         <section className="py-8 bg-background border-b border-border">
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap justify-center gap-2">
@@ -130,7 +128,6 @@ const Gallery = () => {
           </div>
         </section>
 
-        {/* Gallery Grid */}
         <section className="py-12 md:py-16 bg-background">
           <div className="container mx-auto px-4">
             <motion.div
@@ -172,7 +169,6 @@ const Gallery = () => {
           </div>
         </section>
 
-        {/* Lightbox */}
         <AnimatePresence>
           {selectedImage && (
             <motion.div
@@ -208,7 +204,6 @@ const Gallery = () => {
           )}
         </AnimatePresence>
 
-        {/* Info Section */}
         <section className="py-16 bg-muted/30">
           <div className="container mx-auto px-4 text-center">
             <SectionHeader
