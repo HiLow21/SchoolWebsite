@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
+import About from "./pages/About";
 import Academics from "./pages/Academics";
 import ECA from "./pages/ECA";
 import Gallery from "./pages/Gallery";
@@ -26,6 +27,7 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
+        <Route path="/about" element={<About />} />
         <Route path="/academics" element={<Academics />} />
         <Route path="/eca" element={   <ActivitiesShowcase />} />
          <Route path="/gallery" element={<Gallery />} />
