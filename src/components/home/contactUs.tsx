@@ -33,7 +33,7 @@ const ContactUs = () => {
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link to="/gallery">
+              <Link to="/eca">
                 <Images className="mr-2 w-5 h-5" />
                 View Gallery
               </Link>

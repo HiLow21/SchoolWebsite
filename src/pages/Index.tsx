@@ -5,6 +5,7 @@ import ContactUs from "@/components/home/contactUs";
 import StatSection from "@/components/home/statSection";
 import WhyChooseus from "@/components/home/whyChooseus";
 import ActivitiesShowcase from "@/components/home/ActivitiesShowcase";
+import ImageScroll from "@/components/home/imageScroll";
 
 const Index = () => {
   return (
@@ -13,7 +14,8 @@ const Index = () => {
         <HeroSection />
         <StatSection />
         <WhyChooseus />
-        <ActivitiesShowcase />
+        <ImageScroll />
+     
         <ContactUs />
       </PageTransition>
     </Layout>

@@ -11,6 +11,8 @@ import eventImage from "@/assets/gallery-event.jpg";
 import scienceImage from "@/assets/gallery-science.jpg";
 import sportsImage from "@/assets/gallery-sports.jpg";
 import artImage from "@/assets/gallery-art.jpg";
+import Layout from "../layout/Layout";
+import PageTransition from "../layout/PageTransition";
 
 const activitiesData = [
   {
@@ -108,6 +110,9 @@ const ActivitiesShowcase = () => {
   };
 
   return (
+    <Layout >
+      <PageTransition>
+
     <section className="py-20 md:py-28 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Section Header */}
@@ -297,6 +302,8 @@ const ActivitiesShowcase = () => {
         </div>
       </div>
     </section>
+      </PageTransition>
+    </Layout>
   );
 };
 

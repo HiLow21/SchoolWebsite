@@ -14,6 +14,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import { useLenis } from "./hooks/use-lenis";
+import ActivitiesShowcase from "./components/home/ActivitiesShowcase";
 
 const queryClient = new QueryClient();
 
@@ -26,8 +27,8 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
         <Route path="/academics" element={<Academics />} />
-        <Route path="/eca" element={<ECA />} />
-        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/eca" element={   <ActivitiesShowcase />} />
+         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />
