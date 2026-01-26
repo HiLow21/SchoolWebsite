@@ -42,7 +42,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { DataTable, Column } from '@/components/ui/data-table';
-import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -59,7 +58,6 @@ const statusConfig: Record<InquiryStatus, { label: string; icon: React.ReactNode
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, isLoading: authLoading, signOut } = useAuth();
   const { toast } = useToast();
   
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -71,12 +69,6 @@ const AdminDashboard = () => {
   const [editStatus, setEditStatus] = useState<InquiryStatus>('pending');
   const [editNotes, setEditNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) {
-      navigate('/admin/login');
-    }
-  }, [user, isAdmin, authLoading, navigate]);
 
   const fetchInquiries = async () => {
     setIsLoading(true);
@@ -98,10 +90,8 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    if (user && isAdmin) {
-      fetchInquiries();
-    }
-  }, [user, isAdmin]);
+    fetchInquiries();
+  }, []);
 
   const handleViewInquiry = (inquiry: Inquiry) => {
     setSelectedInquiry(inquiry);
@@ -171,9 +161,8 @@ const AdminDashboard = () => {
     setInquiryToDelete(null);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/admin/login');
+  const handleSignOut = () => {
+    navigate('/');
   };
 
   const columns: Column<Inquiry>[] = [
@@ -188,9 +177,24 @@ const AdminDashboard = () => {
       sortable: true,
     },
     {
+      key: 'phone',
+      header: 'Phone',
+      sortable: true,
+      render: (inquiry) => inquiry.phone || 'N/A',
+    },
+    {
       key: 'subject',
       header: 'Subject',
       sortable: true,
+    },
+    {
+      key: 'message',
+      header: 'Message',
+      render: (inquiry) => (
+        <span className="max-w-[200px] truncate block" title={inquiry.message}>
+          {inquiry.message.length > 50 ? `${inquiry.message.substring(0, 50)}...` : inquiry.message}
+        </span>
+      ),
     },
     {
       key: 'status',
@@ -214,17 +218,7 @@ const AdminDashboard = () => {
     },
   ];
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user || !isAdmin) {
-    return null;
-  }
+  // Auth bypass - remove auth checks for development
 
   return (
     <div className="min-h-screen bg-background">
