@@ -17,6 +17,7 @@ import Layout from "@/components/layout/Layout";
 import PageTransition from "@/components/layout/PageTransition";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { FormService } from "@/api/generated/requests";
 
 const contactInfo = [
   {
@@ -80,30 +81,33 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const { error } = await supabase.from("inquiries").insert({
-      name: formData.parentName,
-      email: formData.email,
-      phone: formData.phone || null,
-      subject: formData.inquiryType,
-      message: `${formData.message}${formData.childName ? `\n\nChild's Name: ${formData.childName}` : ""}${formData.childAge ? `\nChild's Age: ${formData.childAge}` : ""}`,
-    });
+    try {
+      const response = await FormService.postApiV1FormPostlead({
+        requestBody: {
+          leadName: formData.parentName,
+          leadEmail: formData.email,
+          leadPhone: formData.phone || null,
+          leadEnquiry: formData.inquiryType,
+        },
+      });
 
-    setIsSubmitting(false);
+      console.log(response)
 
-    if (error) {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      toast({
+        title: "Message Sent!",
+        description: "We'll get back to you within 24 hours.",
+      });
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error("Error submitting form:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to submit inquiry. Please try again.",
       });
-      return;
     }
-
-    setIsSubmitted(true);
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you within 24 hours.",
-    });
   };
 
   return (
