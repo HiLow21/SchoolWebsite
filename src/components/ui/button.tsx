@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -15,17 +16,25 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        success: "bg-green-600 text-white hover:bg-green-700",
+        warning: "bg-amber-500 text-white hover:bg-amber-600",
+        subtle: "bg-muted text-muted-foreground hover:bg-muted/80",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
+        xl: "h-12 rounded-lg px-10 text-base",
         icon: "h-10 w-10",
+      },
+      fullWidth: {
+        true: "w-full",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      fullWidth: false,
     },
   },
 );
@@ -34,12 +43,29 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  loading?: boolean;
+  leftIcon?: LucideIcon;
+  rightIcon?: LucideIcon;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+  ({ className, variant, size, fullWidth, asChild = false, loading = false, leftIcon: LeftIcon, rightIcon: RightIcon, children, disabled, ...props }, ref) => {
+    if (asChild) {
+      return <Slot className={cn(buttonVariants({ variant, size, fullWidth, className }))} ref={ref} {...props} />;
+    }
+
+    return (
+      <button
+        className={cn(buttonVariants({ variant, size, fullWidth, className }))}
+        ref={ref}
+        disabled={disabled || loading}
+        {...props}
+      >
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : LeftIcon ? <LeftIcon className="h-4 w-4" /> : null}
+        {children}
+        {RightIcon && !loading && <RightIcon className="h-4 w-4" />}
+      </button>
+    );
   },
 );
 Button.displayName = "Button";
