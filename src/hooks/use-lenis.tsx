@@ -29,10 +29,15 @@ export function useLenis() {
   }, []);
 
   useEffect(() => {
-    if (lenisInstance) {
-      lenisInstance.scrollTo(0, { immediate: true });
-    } else {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }
+    // Small delay to ensure route transition is complete
+    const timeout = setTimeout(() => {
+      if (lenisInstance) {
+        lenisInstance.scrollTo(0, { immediate: true });
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 50);
+    return () => clearTimeout(timeout);
   }, [pathname]);
 }
