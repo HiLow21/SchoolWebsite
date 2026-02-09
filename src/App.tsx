@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { TokenAuthProvider } from "@/contexts/TokenAuthContext";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Academics from "./pages/Academics";
@@ -18,6 +19,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import { useLenis } from "./hooks/use-lenis";
 import ActivitiesShowcase from "./components/home/ActivitiesShowcase";
+import { RouterLink } from "./constants/route_link";
 
 const queryClient = new QueryClient();
 
@@ -25,19 +27,12 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   useLenis();
 
-  
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Index />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/academics" element={<Academics />} />
-        <Route path="/eca" element={   <ActivitiesShowcase />} />
-         <Route path="/gallery" element={<Gallery />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="*" element={<NotFound />} />
+        {RouterLink.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
       </Routes>
     </AnimatePresence>
   );
@@ -51,6 +46,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTop />
             <AnimatedRoutes />
           </BrowserRouter>
         </TooltipProvider>

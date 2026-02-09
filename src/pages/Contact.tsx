@@ -198,13 +198,13 @@ const Contact = () => {
                   ))}
                 </div>
 
-                {/* Map placeholder */}
+                {/* Map placeholder
                 <div className="rounded-2xl overflow-hidden h-48 bg-muted flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
                     <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">Map Integration</p>
                   </div>
-                </div>
+                </div> */}
               </motion.div>
 
               {/* Contact Form */}
@@ -243,7 +243,7 @@ const Contact = () => {
                       </h2>
 
                       <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="parentName">Your Name *</Label>
                             <Input
@@ -267,10 +267,8 @@ const Contact = () => {
                               required
                             />
                           </div>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
+                            <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number</Label>
                             <Input
                               id="phone"
@@ -281,6 +279,10 @@ const Contact = () => {
                               onChange={handleChange}
                             />
                           </div>
+                        </div>
+
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
                           <div className="space-y-2">
                             <Label htmlFor="inquiryType">Inquiry Type *</Label>
                             <select
@@ -299,9 +301,9 @@ const Contact = () => {
                               ))}
                             </select>
                           </div>
-                        </div>
+                        </div> */}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="childName">Child's Name</Label>
                             <Input
@@ -322,7 +324,7 @@ const Contact = () => {
                               onChange={handleChange}
                             />
                           </div>
-                        </div>
+                        </div> */}
 
                         <div className="space-y-2">
                           <Label htmlFor="message">Your Message *</Label>
