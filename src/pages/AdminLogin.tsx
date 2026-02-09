@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Route, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Lock, Mail, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, ShieldCheck, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,9 +19,24 @@ import { z } from "zod";
 import { getUser } from "@/api/generated/user/user";
 import { apiClient } from "@/api/apiProvider";
 
-const authSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const signupSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Must contain at least one special character"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 const AdminLogin = () => {
@@ -30,8 +45,8 @@ const AdminLogin = () => {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+  const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>(
     {},
   );
 
@@ -43,17 +58,21 @@ const AdminLogin = () => {
   //   }
   // }, [user, isAdmin, isLoading, navigate]);
 
-  const validateForm = () => {
+  const validateForm = (isSignup = false) => {
     try {
-      authSchema.parse(formData);
+      if (isSignup) {
+        signupSchema.parse(formData);
+      } else {
+        loginSchema.parse(formData);
+      }
       setErrors({});
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const fieldErrors: { email?: string; password?: string } = {};
+        const fieldErrors: { email?: string; password?: string; confirmPassword?: string } = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            fieldErrors[err.path[0] as "email" | "password"] = err.message;
+            fieldErrors[err.path[0] as "email" | "password" | "confirmPassword"] = err.message;
           }
         });
         setErrors(fieldErrors);
@@ -61,6 +80,14 @@ const AdminLogin = () => {
       return false;
     }
   };
+
+  const passwordChecks = [
+    { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+    { label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+    { label: "One lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+    { label: "One number", test: (p: string) => /[0-9]/.test(p) },
+    { label: "One special character", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,7 +97,7 @@ const AdminLogin = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      if (!validateForm()) return;
+      if (!validateForm(false)) return;
 
       setIsSubmitting(true);
       const response: any = await userService.loginUser({
@@ -103,15 +130,14 @@ const AdminLogin = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      if (!validateForm()) return;
+      if (!validateForm(true)) return;
 
       setIsSubmitting(true);
       const response = await userService.registerUser({
-        
           password: formData.password,
           userName: formData.email,
           role: "admin",
-          cpassword: formData.password,
+          cpassword: formData.confirmPassword,
       });
       console.log(response);
       // const { error } = await signUp(formData.email, formData.password);
@@ -281,6 +307,46 @@ const AdminLogin = () => {
                     {errors.password && (
                       <p className="text-sm text-destructive">
                         {errors.password}
+                      </p>
+                    )}
+                    {formData.password && (
+                      <div className="space-y-1 pt-1">
+                        {passwordChecks.map((check) => {
+                          const passed = check.test(formData.password);
+                          return (
+                            <div key={check.label} className="flex items-center gap-2 text-xs">
+                              {passed ? (
+                                <Check className="h-3 w-3 text-green-500" />
+                              ) : (
+                                <X className="h-3 w-3 text-destructive" />
+                              )}
+                              <span className={passed ? "text-green-600" : "text-muted-foreground"}>
+                                {check.label}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-confirm-password">Confirm Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signup-confirm-password"
+                        name="confirmPassword"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="pl-9"
+                      />
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="text-sm text-destructive">
+                        {errors.confirmPassword}
                       </p>
                     )}
                   </div>
