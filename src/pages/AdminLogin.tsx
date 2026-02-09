@@ -1,35 +1,47 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Lock, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { z } from 'zod';
+import { useState, useEffect } from "react";
+import { Route, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Lock, Mail, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+import { getUser } from "@/api/generated/user/user";
+import { apiClient } from "@/api/apiProvider";
 
 const authSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, user, isAdmin, isLoading } = useAuth();
+  // const { signIn, signUp, user, isAdmin, isLoading } = useAuth();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
 
-  useEffect(() => {
-    if (!isLoading && user && isAdmin) {
-      navigate('/admin');
-    }
-  }, [user, isAdmin, isLoading, navigate]);
+  const userService = getUser(apiClient);
+
+  // useEffect(() => {
+  //   if (!isLoading && user && isAdmin) {
+  //     navigate("/admin");
+  //   }
+  // }, [user, isAdmin, isLoading, navigate]);
 
   const validateForm = () => {
     try {
@@ -41,7 +53,7 @@ const AdminLogin = () => {
         const fieldErrors: { email?: string; password?: string } = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            fieldErrors[err.path[0] as 'email' | 'password'] = err.message;
+            fieldErrors[err.path[0] as "email" | "password"] = err.message;
           }
         });
         setErrors(fieldErrors);
@@ -56,62 +68,79 @@ const AdminLogin = () => {
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+    try {
+      e.preventDefault();
+      if (!validateForm()) return;
 
-    setIsSubmitting(true);
-    const { error } = await signIn(formData.email, formData.password);
-    setIsSubmitting(false);
-
-    if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Sign in failed',
-        description: error.message === 'Invalid login credentials' 
-          ? 'Invalid email or password. Please try again.'
-          : error.message,
+      setIsSubmitting(true);
+      const response: any = await userService.loginUser({
+        userName: formData.email,
+        password: formData.password,
       });
-      return;
-    }
 
-    toast({
-      title: 'Welcome back!',
-      description: 'Checking admin permissions...',
-    });
+      console.log(response)
+      localStorage.setItem("token", response.data.tokenName);
+      navigate("/admin");
+      // const { error } = await signIn(formData.email, formData.password);
+      setIsSubmitting(false);
+
+      // if (error) {
+      //   toast({
+      //     variant: "destructive",
+      //     title: "Sign in failed",
+      //     description: "Invalid email or password.",
+      //   });
+      // }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Sign in failed",
+        description: "Invalid email or password.",
+      });
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+    try {
+      e.preventDefault();
+      if (!validateForm()) return;
 
-    setIsSubmitting(true);
-    const { error } = await signUp(formData.email, formData.password);
-    setIsSubmitting(false);
-
-    if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Sign up failed',
-        description: error.message.includes('already registered')
-          ? 'This email is already registered. Please sign in instead.'
-          : error.message,
+      setIsSubmitting(true);
+      const response = await userService.registerUser({
+        
+          password: formData.password,
+          userName: formData.email,
+          role: "admin",
+          cpassword: formData.password,
       });
-      return;
+      console.log(response);
+      // const { error } = await signUp(formData.email, formData.password);
+      setIsSubmitting(false);
+
+      // if (error) {
+      //   toast({
+      //     variant: "destructive",
+      //     title: "Sign up failed",
+      //     description: error.message.includes("already registered")
+      //       ? "This email is already registered. Please sign in instead."
+      //       : error.message,
+      //   });
+      //   return;
+      // }
+
+      toast({
+        title: "Account created!",
+        description:
+          "Please contact an administrator to grant you admin access.",
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Sign up failed",
+        description: "An error occurred during sign up. Please try again.",
+      });
     }
-
-    toast({
-      title: 'Account created!',
-      description: 'Please contact an administrator to grant you admin access.',
-    });
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
@@ -168,7 +197,7 @@ const AdminLogin = () => {
                       <Input
                         id="signin-password"
                         name="password"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={formData.password}
                         onChange={handleChange}
@@ -187,12 +216,18 @@ const AdminLogin = () => {
                       </button>
                     </div>
                     {errors.password && (
-                      <p className="text-sm text-destructive">{errors.password}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.password}
+                      </p>
                     )}
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? 'Signing in...' : 'Sign In'}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Signing in..." : "Sign In"}
                   </Button>
                 </form>
               </TabsContent>
@@ -225,7 +260,7 @@ const AdminLogin = () => {
                       <Input
                         id="signup-password"
                         name="password"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={formData.password}
                         onChange={handleChange}
@@ -244,23 +279,30 @@ const AdminLogin = () => {
                       </button>
                     </div>
                     {errors.password && (
-                      <p className="text-sm text-destructive">{errors.password}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.password}
+                      </p>
                     )}
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? 'Creating account...' : 'Create Account'}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Creating account..." : "Create Account"}
                   </Button>
 
                   <p className="text-xs text-center text-muted-foreground">
-                    Note: After signing up, contact an administrator to receive admin access.
+                    Note: After signing up, contact an administrator to receive
+                    admin access.
                   </p>
                 </form>
               </TabsContent>
             </Tabs>
 
             <div className="mt-6 pt-6 border-t text-center">
-              <Button variant="ghost" onClick={() => navigate('/')}>
+              <Button variant="ghost" onClick={() => navigate("/")}>
                 ← Back to Website
               </Button>
             </div>

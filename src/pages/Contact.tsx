@@ -17,7 +17,8 @@ import Layout from "@/components/layout/Layout";
 import PageTransition from "@/components/layout/PageTransition";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { FormService } from "@/api/generated/requests";
+import { getForm } from "@/api/generated/form/form";
+import { apiClient } from "@/api/apiProvider";
 
 const contactInfo = [
   {
@@ -77,19 +78,19 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const formService=getForm(apiClient)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await FormService.postApiV1FormPostlead({
-        requestBody: {
+      const response = await formService.postLead( {
           leadName: formData.parentName,
           leadEmail: formData.email,
           leadPhone: formData.phone || null,
           leadEnquiry: formData.inquiryType,
-        },
-      });
+        });
 
       console.log(response)
 

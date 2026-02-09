@@ -25,25 +25,25 @@ export function DashboardOverview({ onNavigate }: DashboardOverviewProps) {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const { data: inquiries } = await supabase
-        .from('inquiries')
-        .select('status');
+  // useEffect(() => {
+  //   const fetchStats = async () => {
+  //     const { data: inquiries } = await supabase
+  //       .from('inquiries')
+  //       .select('status');
 
-      if (inquiries) {
-        setStats({
-          totalInquiries: inquiries.length,
-          pendingInquiries: inquiries.filter(i => i.status === 'pending').length,
-          resolvedInquiries: inquiries.filter(i => i.status === 'resolved').length,
-          galleryImages: 4,
-        });
-      }
-      setIsLoading(false);
-    };
+  //     if (inquiries) {
+  //       setStats({
+  //         totalInquiries: inquiries.length,
+  //         pendingInquiries: inquiries.filter(i => i.status === 'pending').length,
+  //         resolvedInquiries: inquiries.filter(i => i.status === 'resolved').length,
+  //         galleryImages: 4,
+  //       });
+  //     }
+  //     setIsLoading(false);
+  //   };
 
-    fetchStats();
-  }, []);
+  //   fetchStats();
+  // }, []);
 
   const statCards = [
     {
