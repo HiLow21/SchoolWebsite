@@ -25,10 +25,6 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   useLenis();
 
-  // Scroll to top on route change
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
   
   return (
     <AnimatePresence mode="wait">
