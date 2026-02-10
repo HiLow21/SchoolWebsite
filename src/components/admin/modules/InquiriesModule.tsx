@@ -1,32 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Trash2,
-  Eye,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  RefreshCw,
-} from 'lucide-react';
+import { Trash2, Eye, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { Modal } from '@/components/ui/modal';
 import { Label } from '@/components/ui/label';
 import {
   AlertDialog,
@@ -38,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { InquiryEditModal } from './InquiryEditModal';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -53,6 +30,7 @@ export function InquiriesModule() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [formToDelete, setFormToDelete] = useState<Form | null>(null);
 
@@ -104,6 +82,21 @@ export function InquiriesModule() {
     setIsViewDialogOpen(true);
   };
 
+  const handleEditClick = (form: Form) => {
+    setSelectedForm(form);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSave = (data: any) => {
+    // TODO: Call API to update inquiry
+    console.log('Edit save data:', data);
+    toast({
+      title: 'Edit ready',
+      description: 'API integration pending for saving edits.',
+    });
+    setIsEditDialogOpen(false);
+  };
+
   const handleDeleteClick = (form: Form) => {
     setFormToDelete(form);
     setIsDeleteDialogOpen(true);
@@ -120,7 +113,6 @@ export function InquiriesModule() {
           title: 'Form deleted',
           description: 'The form submission has been deleted successfully.',
         });
-        // Refresh the list
         const response = await formService.getAllLeads();
         setFormData(response.data);
       }
@@ -179,10 +171,6 @@ export function InquiriesModule() {
               View and manage all contact form submissions
             </p>
           </div>
-          {/* <Button variant="outline" size="sm" onClick={fetchInquiries}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button> */}
         </div>
 
         <DataTable
@@ -202,6 +190,14 @@ export function InquiriesModule() {
               <Button
                 variant="ghost"
                 size="icon"
+                className="h-8 w-8"
+                onClick={() => handleEditClick(inquiry)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 className="h-8 w-8 text-destructive hover:text-destructive"
                 onClick={() => handleDeleteClick(inquiry)}
               >
@@ -212,60 +208,54 @@ export function InquiriesModule() {
         />
       </div>
 
-      {/* View/Edit Dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Inquiry Details</DialogTitle>
-            <DialogDescription>
-              View and update the inquiry status
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedForm && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground">Name</Label>
-                  <p className="font-medium">{selectedForm.leadName || 'N/A'}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Email</Label>
-                  <p className="font-medium">{selectedForm.leadEmail || 'N/A'}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Phone</Label>
-                  <p className="font-medium">{selectedForm.leadPhone || 'N/A'}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Lead ID</Label>
-                  <p className="font-medium">{selectedForm.leadId || 'N/A'}</p>
-                </div>
-              </div>
-
+      {/* View Dialog using Modal */}
+      <Modal
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        title="Inquiry Details"
+        description="View the inquiry details"
+        className="max-w-2xl"
+        actions={[
+          { label: 'Close', variant: 'outline', onClick: () => setIsViewDialogOpen(false) },
+        ]}
+      >
+        {selectedForm && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-muted-foreground">Inquiry</Label>
-                <p className="mt-1 p-3 bg-muted rounded-md text-sm">
-                  {selectedForm.leadEnquiry || 'No inquiry text'}
-                </p>
+                <Label className="text-muted-foreground">Name</Label>
+                <p className="font-medium">{selectedForm.leadName || 'N/A'}</p>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Form Data</Label>
-                  <p className="text-sm text-muted-foreground">This is a form submission from your website.</p>
-                </div>
+              <div>
+                <Label className="text-muted-foreground">Email</Label>
+                <p className="font-medium">{selectedForm.leadEmail || 'N/A'}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Phone</Label>
+                <p className="font-medium">{selectedForm.leadPhone || 'N/A'}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Lead ID</Label>
+                <p className="font-medium">{selectedForm.leadId || 'N/A'}</p>
               </div>
             </div>
-          )}
+            <div>
+              <Label className="text-muted-foreground">Inquiry</Label>
+              <p className="mt-1 p-3 bg-muted rounded-md text-sm">
+                {selectedForm.leadEnquiry || 'No inquiry text'}
+              </p>
+            </div>
+          </div>
+        )}
+      </Modal>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Edit Dialog */}
+      <InquiryEditModal
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        inquiry={selectedForm}
+        onSave={handleEditSave}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
