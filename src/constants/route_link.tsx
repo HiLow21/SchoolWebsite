@@ -1,13 +1,13 @@
 import Index from "@/pages/Index";
-import { routes } from "./routes";
 import About from "@/pages/About";
 import Academics from "@/pages/Academics";
-import ActivitiesShowcase from "@/components/home/ActivitiesShowcase";
+import ECA from "@/pages/ECA";
 import Gallery from "@/pages/Gallery";
-import { Contact } from "lucide-react";
+import Contact from "@/pages/Contact";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/NotFound";
+
 export const RouterLink = [
   {
     path: "/",
@@ -23,7 +23,7 @@ export const RouterLink = [
   },
   {
     path: "/eca",
-    element: <ActivitiesShowcase />,
+    element: <ECA />,
   },
   {
     path: "/gallery",
@@ -46,5 +46,4 @@ export const RouterLink = [
     element: <NotFound />,
   },
 ];
-
 

@@ -250,10 +250,10 @@ const AdminLogin = () => {
 
                   <Button
                     type="submit"
-                    className="w-full"
-                    disabled={isSubmitting}
+                    fullWidth
+                    loading={isSubmitting}
                   >
-                    {isSubmitting ? "Signing in..." : "Sign In"}
+                    Sign In
                   </Button>
                 </form>
               </TabsContent>
@@ -353,10 +353,10 @@ const AdminLogin = () => {
 
                   <Button
                     type="submit"
-                    className="w-full"
-                    disabled={isSubmitting}
+                    fullWidth
+                    loading={isSubmitting}
                   >
-                    {isSubmitting ? "Creating account..." : "Create Account"}
+                    Create Account
                   </Button>
 
                   <p className="text-xs text-center text-muted-foreground">
