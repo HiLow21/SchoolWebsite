@@ -28,7 +28,7 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               {[
-                { name: "About Us", path: "/" },
+                { name: "About Us", path: "/about" },
                 { name: "Academics", path: "/academics" },
                 { name: "Activities", path: "/eca" },
                 { name: "Gallery", path: "/gallery" },
